@@ -3,14 +3,11 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"users-api-memory/internal/models"
 	"users-api-memory/internal/response"
 )
-
-var users []models.User
 
 type UserHandler struct {
 	DB *sql.DB
@@ -89,7 +86,7 @@ func (h *UserHandler)GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var users []models.User
+	users := make([]models.User, 0)
 	
 	for rows.Next() {
 		var user models.User
@@ -209,13 +206,30 @@ func (h *UserHandler) GetCountHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func ClearUsersHandler(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) ClearUsersHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		response.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed!")
 		return
 	}
 
-	users = []models.User{}
-	fmt.Fprintln(w, "All Users deleted!")
+	query := `
+	DELETE FROM users
+	`
+	result, err := h.DB.Exec(query)
+		if err != nil {
+			response.WriteError(w, http.StatusInternalServerError, "Failed to delete all users")
+			return
+		} 
+	
+	rawAffected, err := result.RowsAffected()
+	if err != nil {
+		response.WriteError(w, http.StatusInternalServerError, "Failed to check deleted rows!")
+		return
+	}
+
+	response.WriteJSON(w , http.StatusOK, map[string]interface{}{
+		"message:" : "All users deleted successfully!",
+		"deleted_count:" : rawAffected,
+	} )
 
 }

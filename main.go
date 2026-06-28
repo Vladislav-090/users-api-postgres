@@ -25,7 +25,7 @@ func main() {
 	http.HandleFunc("/getUser", userHandler.GetUserHandler)
 	http.HandleFunc("/getCount", userHandler.GetCountHandler)
 	http.HandleFunc("/deleteUser", userHandler.DeleteUserHandler)
-	http.HandleFunc("/clearUsers", handlers.ClearUsersHandler)
+	http.HandleFunc("/clearUsers", userHandler.ClearUsersHandler)
 
 	http.ListenAndServe(":8080", nil)
 
