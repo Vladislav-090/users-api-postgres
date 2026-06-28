@@ -111,32 +111,40 @@ func (h *UserHandler)GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 		response.WriteJSON(w, http.StatusOK, users)
 }
 
-func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler)GetUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		response.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed!")
 		return
 	}
 
+	var user models.User
+
 	name := r.URL.Query().Get("name")
-	if name == "" {
+	if name == ""{
 		response.WriteError(w, http.StatusBadRequest, "Name is empty!")
 		return
 	}
 
-	for _, user := range users {
-		if user.Name == name {
-			jsonData, err := json.MarshalIndent(user, "", "  ")
-			if err != nil {
-				response.WriteError(w, http.StatusBadRequest, "Invalid JSON!")
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			fmt.Fprintln(w, string(jsonData))
-			return
-		}
+	query:= `
+	SELECT  id, name, age, email, is_active, created_at
+	FROM users
+	WHERE name = $1
+	`
+
+	err := h.DB.QueryRow(query,name).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Age,
+		&user.Email,
+		&user.IsActive,
+		&user.CreatedAt,
+	)
+	if err != nil {
+		response.WriteError(w, http.StatusNotFound, "User not found!")
+		return
 	}
-	response.WriteError(w, http.StatusBadRequest, "User not found!")
+	response.WriteJSON(w, http.StatusOK, user)
 }
 
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
