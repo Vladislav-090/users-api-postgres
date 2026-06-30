@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"users-api-memory/internal/database"
-	"users-api-memory/internal/handlers"
+	"users-api-postgres/internal/database"
+	"users-api-postgres/internal/handlers"
 )
 
 func main() {

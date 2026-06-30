@@ -3,7 +3,7 @@ package response
 import (
 	"encoding/json"
 	"net/http"
-	"users-api-memory/internal/models"
+	"users-api-postgres/internal/models"
 )
 
 type ErrorResponse struct {

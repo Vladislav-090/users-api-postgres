@@ -1,4 +1,4 @@
-module users-api-memory
+module users-api-postgres
 
 go 1.22.5
 

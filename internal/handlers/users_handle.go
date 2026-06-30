@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"users-api-memory/internal/models"
-	"users-api-memory/internal/response"
+	"users-api-postgres/internal/models"
+	"users-api-postgres/internal/response"
 )
 
 type UserHandler struct {
